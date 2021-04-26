@@ -1,4 +1,4 @@
-# Some code borrowed from Three.js Journey
+# Three.js Webpack Starter
 
 ## Setup
 
@@ -15,3 +15,5 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
+
+Some code borrowed from Three.js Journey.
