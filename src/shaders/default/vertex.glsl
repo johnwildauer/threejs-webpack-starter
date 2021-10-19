@@ -1,4 +1,4 @@
-#pragma glslify: import('../chunks/common-vertex.glsl')
+// #pragma glslify: import('../chunks/common-vertex.glsl')
 //#pragma glslify: import('../chunks/extra-vertex.glsl')
 
 // #pragma glslify: random = require(glsl-random) //2d

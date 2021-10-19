@@ -1,7 +1,7 @@
 #version 300 es
 
 #define varying in
-out highp vec4 pc_fragColor;
+out mediump vec4 pc_fragColor;
 
 #define gl_FragColor pc_fragColor
 
@@ -9,5 +9,5 @@ out highp vec4 pc_fragColor;
 #define PI2 6.283185307179586
 #define PI_HALF 1.5707963267948966
 
-precision highp float;
-precision highp int;
+precision mediump float;
+precision mediump int;

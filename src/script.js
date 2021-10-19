@@ -1,92 +1,128 @@
 import './style.css'
 import * as THREE from 'three'
-
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import * as dat from 'dat.gui'
 import defaultVertextShader from './shaders/default/vertex.glsl'
 import defaultFragmentShader from './shaders/default/fragment.glsl'
 
+/**
+ * Constants
+ */
+// Clock
+const clock = new THREE.Clock()
+
 // Debug
 const gui = new dat.GUI()
 
-// Canvas
-const canvas = document.querySelector('canvas.webgl')
-
-// Scene
-const scene = new THREE.Scene()
-
-// Loaders
-const textureLoader = new THREE.TextureLoader()
-
-// Plane
-const geometry = new THREE.PlaneGeometry(1, 1, 32, 32)
-const material = new THREE.RawShaderMaterial({
-	uniforms: {
-		uTime: { value: 0 },
-	},
-	//wireframe: true,
-	// side: THREE.DoubleSide,
-	transparent: true,
-	vertexShader: defaultVertextShader,
-	fragmentShader: defaultFragmentShader,
-})
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
-
-// Window Size and Resize
-const sizes = {
+/**
+ * Variables
+ */
+let sceneReady = false
+let sizes = {
 	width: window.innerWidth,
 	height: window.innerHeight,
 }
-window.addEventListener('resize', () => {
-	// Update sizes
-	sizes.width = window.innerWidth
-	sizes.height = window.innerHeight
+var scene, camera, canvas, renderer, controls
 
-	// Update camera
-	camera.aspect = sizes.width / sizes.height
-	camera.updateProjectionMatrix()
+/**
+ * Init
+ */
+const init = () => {
+	// Loaders
+	const loadingManager = new THREE.LoadingManager(
+		() => {
+			//Loaded
+		},
 
-	// Update renderer
+		// Progress
+		(itemUrl, itemsLoaded, itemsTotal) => {
+			const progressRatio = itemsLoaded / itemsTotal
+		}
+	)
+	const gltfLoader = new GLTFLoader(loadingManager)
+	const textureLoader = new THREE.TextureLoader(loadingManager)
+	const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager)
+
+	// Scene
+	scene = new THREE.Scene()
+
+	// Camera
+	camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+	camera.position.set(0, 0, 1)
+	scene.add(camera)
+
+	// Renderer
+	canvas = document.querySelector('canvas.webgl')
+	renderer = new THREE.WebGLRenderer({
+		canvas,
+		antialias: true,
+	})
+	renderer.setClearColor(0x151515, 1)
 	renderer.setSize(sizes.width, sizes.height)
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-})
 
-let mouse
-window.addEventListener('mousemove', e => {
-	mouse = {
-		x: e.clientX / window.innerWidth,
-		y: e.clientY / window.innerHeight,
-	}
-})
+	// Orbit Controls
+	controls = new OrbitControls(camera, canvas)
+	controls.enableDamping = true
 
-// Camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(0, 0, 1)
-scene.add(camera)
+	// Plane
+	const geometry = new THREE.PlaneGeometry(1, 1, 32, 32)
+	const material = new THREE.ShaderMaterial({
+		uniforms: {
+			uTime: { value: 0 },
+		},
+		//wireframe: true,
+		// side: THREE.DoubleSide,
+		transparent: true,
+		vertexShader: defaultVertextShader,
+		fragmentShader: defaultFragmentShader,
+	})
+	const mesh = new THREE.Mesh(geometry, material)
+	scene.add(mesh)
 
-// Orbit Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+	listeners()
+	update()
+}
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({
-	canvas,
-	antialias: true,
-})
-renderer.setClearColor(0x151515, 1)
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+/**
+ * Listeners
+ */
+const listeners = () => {
+	window.addEventListener('resize', () => {
+		// Update sizes
+		sizes.width = window.innerWidth
+		sizes.height = window.innerHeight
 
-// Animation
-const clock = new THREE.Clock()
-const tick = () => {
+		// Update camera
+		camera.aspect = sizes.width / sizes.height
+		camera.updateProjectionMatrix()
+
+		// Update renderer
+		renderer.setSize(sizes.width, sizes.height)
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+	})
+
+	// Mouse Events
+	let mouse
+	window.addEventListener('mousemove', e => {
+		mouse = {
+			x: e.clientX / window.innerWidth,
+			y: e.clientY / window.innerHeight,
+		}
+	})
+}
+
+/**
+ * Update
+ */
+const update = () => {
 	const elapsedTime = clock.getElapsedTime()
 
 	// Update Materials
-	if (material) {
-		material.uniforms.uTime.value = elapsedTime
-	}
+	// if (material) {
+	// 	material.uniforms.uTime.value = elapsedTime
+	// }
 
 	// Update controls
 	controls.update()
@@ -95,9 +131,10 @@ const tick = () => {
 	renderer.render(scene, camera)
 
 	// Call tick again on the next frame (23.976 fps option)
-	window.requestAnimationFrame(tick)
+	window.requestAnimationFrame(update)
 	// setTimeout(() => {
 	// 	window.requestAnimationFrame(tick)
 	// }, 1000 / 23.976)
 }
-tick()
+
+init()

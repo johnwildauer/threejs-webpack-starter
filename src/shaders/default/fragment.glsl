@@ -1,10 +1,10 @@
-#pragma glslify: import('../chunks/common-fragment.glsl')
+// #pragma glslify: import('../chunks/common-fragment.glsl')
 //#pragma glslify: import('../chunks/extra-fragment.glsl')
 
 // #pragma glslify: random = require(glsl-random) //2d
 
 // #pragma glslify: snoise2 = require(glsl-noise/simplex/2d) 
-#pragma glslify: snoise3 = require(glsl-noise/simplex/3d) 
+// #pragma glslify: snoise3 = require(glsl-noise/simplex/3d) 
 // #pragma glslify: snoise4 = require(glsl-noise/simplex/4d) 
 // #pragma glslify: cnoise2 = require(glsl-noise/classic/2d) 
 // #pragma glslify: cnoise3 = require(glsl-noise/classic/3d) 

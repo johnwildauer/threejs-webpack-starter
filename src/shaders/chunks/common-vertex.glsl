@@ -3,8 +3,8 @@
 #define attribute in
 #define varying out
 
-precision highp float;
-precision highp int;
+precision mediump float;
+precision mediump int;
 
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
